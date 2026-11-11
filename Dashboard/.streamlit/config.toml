@@ -1,0 +1,22 @@
+[client]
+showErrorDetails = true
+
+[theme]
+# Abyssal Monochrome / Dark Bento
+base = "dark"
+primaryColor = "#FFFFFF"
+backgroundColor = "#09090B"
+secondaryBackgroundColor = "#18181B"
+textColor = "#FFFFFF"
+font = "sans serif"
+
+[logger]
+level = "info"
+
+[server]
+port = 8505
+maxUploadSize = 200
+enableXsrfProtection = true
+# Servir archivos estáticos desde Dashboard/src/static/ (Background.png, logos)
+enableStaticServing = true
+headless = true

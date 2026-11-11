@@ -1,0 +1,23 @@
+# Caddyfile para Oki-Nami Dashboard
+# Reemplaza 'finanzas.tudominio.com' por tu subdominio real.
+
+finanzas.tudominio.com {
+    # Autenticación Básica HTTP opcional (descomenta las 2 líneas siguientes y genera el hash con 'caddy hash-password')
+    # basicauth / {
+    #     usuario JZXaF...
+    # }
+
+    # Proxy inverso al contenedor del Dashboard
+    reverse_proxy dashboard:8501
+
+    # Compresión gzip/zstd
+    encode gzip zstd
+
+    # Cabeceras de seguridad
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+    }
+}

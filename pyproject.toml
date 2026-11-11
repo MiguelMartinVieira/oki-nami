@@ -1,0 +1,106 @@
+[project]
+name = "oki-nami"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.35.0",
+    "pandas>=2.2.0",
+    "plotly>=5.20.0",
+    "pydantic>=2.7.0",
+    "gspread>=6.1.0",
+    "google-auth>=2.29.0",
+    "google-auth-oauthlib>=1.2.0",
+    "google-genai>=0.1.0",
+    "fpdf2>=2.7.9",
+    "tenacity>=8.3.0",
+    "python-dotenv>=1.0.1",
+    "pillow>=10.3.0",
+    "openpyxl>=3.1.2",
+    "cachetools>=5.3.3",
+    "requests>=2.31.0",
+    "pytest>=8.0.0",
+]
+
+# ──────────────────────────────────────────────
+# Ruff — linter rápido (reemplaza flake8 + isort + más)
+# ──────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["Dashboard/src", "Dashboard/tests", "Dashboard/scripts"]
+
+# No tocar archivos generados / cache / backups
+extend-exclude = [
+    ".cache",
+    "**/.cache",
+    "Dashboard/src/data/backups",
+    "Dashboard/.cache",
+    "**/__pycache__",
+    "*.csv",
+    "*.json",
+    "Padres",
+]
+
+[tool.ruff.lint]
+# Selección conservadora para evitar ruido masivo en código existente:
+#   E    = pycodestyle errors (excepto E501 que ya cubre black)
+#   F    = pyflakes (imports muertos, vars sin usar, undefined names…)
+#   I    = isort (orden imports)
+#   UP   = pyupgrade (sintaxis modernizada cuando es seguro)
+#   B    = flake8-bugbear (bugs sutiles tipo mutable default args)
+select = ["E", "F", "I", "UP", "B"]
+
+# Ignorar reglas que generarían diff masivo o chocan con el estilo actual:
+#   E501  = line too long (lo gestiona black con line-length 100)
+#   B008  = mutable default arg (FastAPI-style; en este codebase no aplica)
+#   UP007 = X | Y union (mantenemos compat con código antiguo)
+ignore = ["E501", "B008", "UP007"]
+
+# Por archivo: en tests permitimos imports al medio (fixtures) y asserts largos
+[tool.ruff.lint.per-file-ignores]
+"Dashboard/tests/**" = ["E402", "F401"]
+"Dashboard/src/constants.py" = ["F401", "F403"]      # re-exports * legítimos
+"**/__init__.py" = ["F401"]                           # re-exports puros de subpaquetes
+"Dashboard/src/app.py" = ["E402"]                     # imports tras sys.path.insert + cache_resource
+"Dashboard/scripts/**" = ["E402"]                     # CLI scripts: sys.path antes de imports
+"Dashboard/src/services/report.py" = ["E402"]         # import tras load_dotenv()
+"Dashboard/src/services/drive_doc.py" = ["E402"]      # lazy imports para credenciales
+"Dashboard/src/services/pdf_generator.py" = ["E402"]
+
+
+[tool.ruff.format]
+# Si quieres usar el formateador de Ruff EN VEZ de Black:
+#   pre-commit -> dejar solo `ruff-format` y quitar `black`.
+quote-style = "double"
+indent-style = "space"
+
+# ──────────────────────────────────────────────
+# Black — formateador de Python
+# ──────────────────────────────────────────────
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+extend-exclude = '''
+/(
+    \.cache
+  | __pycache__
+  | Dashboard/src/data/backups
+  | Dashboard/\.cache
+  | Padres
+)/
+'''
+
+# ──────────────────────────────────────────────
+# Pytest — config (sobreescribe conftest.py si hubiera conflicto)
+# ──────────────────────────────────────────────
+[tool.pytest.ini_options]
+pythonpath = ["Dashboard/src"]
+testpaths = ["Dashboard/tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+filterwarnings = [
+    # Silencia el ruido de Streamlit cuando no hay runtime (tests fuera de `streamlit run`)
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]

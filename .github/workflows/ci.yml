@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: |
+            Dashboard/requirements.txt
+            Dashboard/requirements-dev.txt
+
+      - name: Install dependencies
+        working-directory: ./Dashboard
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        working-directory: ./Dashboard
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          pytest --tb=short -q
+
+      - name: Coverage report (opcional)
+        if: success()
+        working-directory: ./Dashboard
+        continue-on-error: true
+        run: |
+          pytest --cov=src --cov-report=term-missing --tb=no -q || true

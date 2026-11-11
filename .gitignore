@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+!.env.example
+.venv*
+
+# Credentials
+Dashboard/src/config/credentials.json
+
+# macOS
+Oki-Nami
+.DS_Store
+
+# Windows
+desktop.ini
+Thumbs.db
+
+# Google Drive local sync files
+*.gdoc
+*.gsheet
+*.gslides
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+
+# Data (local fallback CSVs are OK, but don't track cache or backups)
+*.tmp
+Dashboard/src/data/backups/
+Dashboard/src/_processed_log.json
+Dashboard/src/_email_log.json
+Padres/*
+!Padres/.gitkeep
+PDFs_TR/*
+!PDFs_TR/.gitkeep
+*.pdf
+
+Dashboard/.cache/
+.cache/
+
+# Recovery artifacts (Drive forensics + OAuth tokens — NUNCA commitear secretos)
+_recovered/
+_drive_oauth_client.json
+_archived_monoliths/
+
+# Drive sync temp files
+*.tmp.*
+
+# Test / build / artifacts varios
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Métricas reales que exporta el widget de iOS
+Dashboard/src/static/widgets_metrics.json
